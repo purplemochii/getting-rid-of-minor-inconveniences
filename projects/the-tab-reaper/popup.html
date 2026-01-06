@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                font-family: system-ui;
+                padding: 10px;
+                width: 180px;
+            }
+            button {
+                width: 100%;
+                padding: 10px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+
+    <body>
+        <button id="reap">Reap Tabs</button>
+
+        <script>
+            document.getElementById("reap").addEventListener("click", () => {
+                chrome.runtime.sendMessage({ action: "REAP" });;
+                window.close();
+            })
+        </script>
+    </body>
+</html>
