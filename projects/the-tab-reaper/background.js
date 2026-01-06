@@ -1,4 +1,4 @@
-const FIVE_DAYS_MS =5 * 24 * 60 * 60 * 1000;
+const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
 
 chrome.runtime.onMessage.addListener((msg) => {
     if (msg.action === "REAP") {
@@ -14,6 +14,9 @@ function reapTabs() {
 
         tabs.forEach((tab) => {
             if (!tab.lastAccessed) return;
+
+            //we respect the immortals
+            if (tab.pinned) return;
 
             const inactiveFor = now - tab.lastAccessed;
 
