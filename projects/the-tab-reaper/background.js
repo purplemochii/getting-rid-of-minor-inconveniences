@@ -40,16 +40,35 @@ function reapTabs() {
     });
 }
 
+/*
 function downloadJSON(data) {
     const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json"
     });
 
-    const url = URL.createdObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
     chrome.downloads.download({
         url,
         filename: `tab-purgatory-${new Date().toISOString().slice(0, 10)}.json`,
         saveAs: false
     });
+
+    //no memory leaks in this household
+    URL.revokeObjectURL(url);
 }
+*/
+//okay clearly its been a minute since i last tried to make an extension bc why are there so many random things i cant do now tf -_-
+//ive to make url a function i think
+function downloadJSON(data) {
+    const json = JSON.stringify(data, null, 2);
+    const encoded = encodeURIComponent(json);
+    const dataUrl = `data:application/json;charset=utf-8,${encoded}`;
+
+    chrome.downloads.download({
+        url: dataUrl,
+        filename: `tab-purgatory-${new Date().toISOString().slice(0, 10)}.json`,
+        saveAs: false
+    });
+}
+//ts better work istg
