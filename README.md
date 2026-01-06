@@ -1,1 +1,1 @@
-# Getting Rid of Minor Inconveniences 😌
+# Getting Rid of Minor Inconveniences
