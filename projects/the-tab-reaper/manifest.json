@@ -3,7 +3,7 @@
     "name": "Tab Reaper",
     "version": "1.0",
     "description": "Harvests inactive tabs and sends them to tab purgatory",
-    "permissions": ["downloads", "tabs"],
+    "permissions": ["downloads", "tabs", "alarms", "storage"],
     "background": {
         "service_worker": "background.js"
     },
