@@ -17,9 +17,9 @@ chmod +x bin/why-is-this-running.sh
 
 
 ## Usage
-./bin/why-is-this-running.sh
-./bin/why-is-this-running.sh --kill
-./bin/why-is-this-running.sh --nice
+./bin/why.sh
+./bin/why.sh --kill
+./bin/why.sh --nice
 
 
 ---
@@ -29,7 +29,7 @@ chmod +x bin/why-is-this-running.sh
 1. Clone repo  
 2. Install Python dependencies  
 3. Make the bash wrapper executable  
-4. Run `./bin/why-is-this-running.sh`  
+4. Run `./bin/why.sh`  
 5. Optional: alias it for convenience
 
 ```bash
