@@ -1,24 +1,184 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <style>
-            body {
-                font-family: system-ui;
-                padding: 10px;
-                width: 180px;
-            }
-            button {
-                width: 100%;
-                padding: 10px;
-                font-weight: bold;
-                cursor: pointer;
-            }
-        </style>
-    </head>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <body>
-        <button id="reap">Reap Tabs</button>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0d0d0d;
+            color: #c9c9c9;
+            width: 260px;
+            padding: 18px;
+            overflow: hidden;
+        }
 
-        <script src="popup.js"></script>
-    </body>
+        /* ── screens ── */
+        .screen { display: none; flex-direction: column; gap: 14px; }
+        .screen.active { display: flex; }
+
+        /* ── header ── */
+        .header { display: flex; align-items: center; gap: 10px; }
+        .header-icon { font-size: 1.5rem; line-height: 1; }
+        .header-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e8d5c4;
+            letter-spacing: 0.04em;
+        }
+        .header-sub {
+            font-size: 0.67rem;
+            color: #3d3d3d;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 2px;
+        }
+
+        .divider { height: 1px; background: #1c1c1c; }
+
+        /* ── soul count box ── */
+        .soul-count {
+            background: #111;
+            border: 1px solid #1e1e1e;
+            border-radius: 8px;
+            padding: 13px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .soul-count .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #c0392b;
+            line-height: 1;
+            min-width: 2ch;
+        }
+        .soul-count.clear .number { color: #2e7d42; }
+        .soul-count .count-label {
+            font-size: 0.75rem;
+            color: #555;
+            line-height: 1.4;
+        }
+        .soul-count .count-label strong {
+            display: block;
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        /* ── buttons ── */
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 7px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        button:hover:not(:disabled) { opacity: 0.85; }
+        button:active:not(:disabled) { transform: scale(0.98); }
+
+        .btn-reap { background: #6b1a1a; color: #f0ddd5; }
+        .btn-reap:disabled {
+            background: #181818;
+            color: #383838;
+            cursor: not-allowed;
+        }
+        .btn-confirm { background: #b03020; color: #fff; }
+        .btn-cancel {
+            background: transparent;
+            color: #555;
+            border: 1px solid #1e1e1e;
+        }
+        .btn-cancel:hover:not(:disabled) { color: #888; }
+
+        /* ── confirm screen ── */
+        .confirm-text {
+            font-size: 0.79rem;
+            color: #666;
+            line-height: 1.6;
+        }
+        .confirm-text .highlight {
+            color: #e8d5c4;
+            font-weight: 600;
+        }
+
+        /* ── done screen ── */
+        .status-text {
+            font-size: 0.78rem;
+            color: #555;
+            text-align: center;
+            line-height: 1.6;
+            padding: 4px 0;
+        }
+
+        /* ── footer note ── */
+        .footer-note {
+            font-size: 0.65rem;
+            color: #282828;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Screen 1: Default ── -->
+    <div class="screen active" id="screen-default">
+        <div class="header">
+            <span class="header-icon">⚰️</span>
+            <div>
+                <div class="header-title">Tab Reaper</div>
+                <div class="header-sub">Keeper of forgotten souls</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="soul-count" id="count-display">
+            <span class="number" id="doomed-count">…</span>
+            <div class="count-label">
+                <strong id="count-main-label">loading</strong>
+                <span id="count-sub-label">inactive for 5+ days</span>
+            </div>
+        </div>
+        <button class="btn-reap" id="btn-reap" disabled>Begin the Reaping</button>
+        <div class="footer-note">pinned tabs are immortal · groups are sacred</div>
+    </div>
+
+    <!-- ── Screen 2: Confirm ── -->
+    <div class="screen" id="screen-confirm">
+        <div class="header">
+            <span class="header-icon">⚠️</span>
+            <div>
+                <div class="header-title">Are you sure?</div>
+                <div class="header-sub">This cannot be undone</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <p class="confirm-text">
+            <span class="highlight" id="confirm-count">0</span> soul<span id="confirm-plural"></span> will be taken to purgatory and recorded in this month's chronicle.
+        </p>
+        <button class="btn-confirm" id="btn-confirm">Confirm the Harvest</button>
+        <button class="btn-cancel" id="btn-cancel">Spare Them (for now)</button>
+    </div>
+
+    <!-- ── Screen 3: Done ── -->
+    <div class="screen" id="screen-done">
+        <div class="header">
+            <span class="header-icon">🕯️</span>
+            <div>
+                <div class="header-title">The Reaping Begins</div>
+                <div class="header-sub">May they rest in purgatory</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <p class="status-text">
+            The souls have been collected.<br>
+            Check your downloads for the<br>monthly chronicle.
+        </p>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
 </html>

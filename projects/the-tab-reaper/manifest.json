@@ -1,9 +1,9 @@
 {
     "manifest_version": 3,
     "name": "Tab Reaper",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Harvests inactive tabs and sends them to tab purgatory",
-    "permissions": ["downloads", "tabs", "alarms", "storage"],
+    "permissions": ["downloads", "tabs", "alarms", "storage", "notifications"],
     "background": {
         "service_worker": "background.js"
     },
